@@ -1,5 +1,7 @@
 'use strict';
 
+import * as L from './node_modules/leaflet/dist/leaflet-src.esm.js';
+
 const form = document.querySelector('.form');
 const containerWorkouts = document.querySelector('.workouts');
 const inputType = document.querySelector('.form__input--type');
@@ -7,8 +9,6 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
-
-let map, mapEvent;
 
 class Workout {
   date = new Date();
@@ -289,4 +289,4 @@ class App {
   }
 }
 
-const app = new App();
+new App();
