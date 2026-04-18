@@ -1,5 +1,5 @@
 'use strict';
-import * as L from '../node_modules/leaflet/dist/leaflet-src.esm.js';
+import * as L from 'leaflet';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
