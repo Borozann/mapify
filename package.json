@@ -1,16 +1,8 @@
 {
-<<<<<<< HEAD
-  "devDependencies": {
-    "parcel": "^2.16.4"
-  },
-  "scripts": {
-    "start": "parcel index.html",
-    "build": "parcel build index.html"
-=======
   "name": "mapty",
   "version": "1.0.0",
   "description": "",
-  "homepage": "https://github.com/Borozann/mapify#readme",
+  "homepage": "https://borozann.github.io/mapify",
   "bugs": {
     "url": "https://github.com/Borozann/mapify/issues"
   },
@@ -20,16 +12,16 @@
   },
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
-  "main": "script.js",
-  "directories": {
-    "doc": "docs"
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "parcel index.html",
+    "build": "parcel build index.html --dist-dir dist --public-url .",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "leaflet": "^1.9.4"
->>>>>>> 2e875a45db7362d28b845e5d6b6aaa45d2d5c605
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "parcel": "^2.16.4"
   }
 }
