@@ -1,14 +1,12 @@
 'use strict';
 import * as L from 'leaflet';
-import iconUrl from 'leaflet/dist/images/marker-icon.png';
-import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
-import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl,
-  iconUrl,
-  shadowUrl,
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  iconRetinaUrl:
+    'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 import * as dom from './ui/dom.js';
 import Running from './models/Running.js';
@@ -61,6 +59,7 @@ export default class App {
     this.#map.on('click', this._showForm.bind(this));
 
     this.#workouts.forEach(work => {
+      this._renderWorkout(work);
       this._renderWorkoutMarker(work);
     });
   }
@@ -225,9 +224,6 @@ export default class App {
     if (!data) return;
 
     this.#workouts = data;
-    this.#workouts.forEach(work => {
-      this._renderWorkout(work);
-    });
   }
 
   reset() {
