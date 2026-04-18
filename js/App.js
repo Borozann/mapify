@@ -1,74 +1,12 @@
 'use strict';
-
-import * as L from './node_modules/leaflet/dist/leaflet-src.esm.js';
-
-const form = document.querySelector('.form');
-const containerWorkouts = document.querySelector('.workouts');
-const inputType = document.querySelector('.form__input--type');
-const inputDistance = document.querySelector('.form__input--distance');
-const inputDuration = document.querySelector('.form__input--duration');
-const inputCadence = document.querySelector('.form__input--cadence');
-const inputElevation = document.querySelector('.form__input--elevation');
-
-class Workout {
-  date = new Date();
-  id = (Date.now() + '').slice(-10);
-  clicks = 0;
-
-  constructor(coords, distance, duration) {
-    this.coords = coords;
-    this.distance = distance;
-    this.duration = duration;
-  }
-
-  _setDescription() {
-    // prettier-ignore
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 
-    'September', 'October', 'November', 'December'];
-
-    this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on 
-      ${months[this.date.getMonth()]} 
-      ${this.date.getDate()}`;
-  }
-
-  click() {
-    this.clicks++;
-  }
-}
-
-class Running extends Workout {
-  type = 'running';
-
-  constructor(coords, distance, duration, cadence) {
-    super(coords, distance, duration);
-    this.cadence = cadence;
-    this.calcPace();
-    this._setDescription();
-  }
-
-  calcPace() {
-    this.pace = this.duration / this.distance;
-    return this.pace;
-  }
-}
-
-class Cycling extends Workout {
-  type = 'cycling';
-
-  constructor(coords, distance, duration, elevationGain) {
-    super(coords, distance, duration);
-    this.elevationGain = elevationGain;
-    this.calcSpeed();
-    this._setDescription();
-  }
-
-  calcSpeed() {
-    this.speed = this.distance / (this.duration / 60);
-  }
-}
+import * as L from '../node_modules/leaflet/dist/leaflet-src.esm.js';
+import * as dom from './ui/dom.js';
+import Running from './models/Running.js';
+import Cycling from './models/Cycling.js';
+import LocalStorageService from './services/LocalStorageService.js';
 
 // APPLICATION ARCHITETURE
-class App {
+export default class App {
   #map;
   #mapZoomLevel = 13;
   #mapEvent;
@@ -76,12 +14,14 @@ class App {
 
   constructor() {
     this._getPosition();
-
     this._getLocalStorage();
 
-    form.addEventListener('submit', this._newWorkout.bind(this));
-    inputType.addEventListener('change', this._toggleElevationFlied);
-    containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
+    dom.form.addEventListener('submit', this._newWorkout.bind(this));
+    dom.inputType.addEventListener('change', this._toggleElevationFlied);
+    dom.containerWorkouts.addEventListener(
+      'click',
+      this._moveToPopup.bind(this),
+    );
   }
 
   _getPosition() {
@@ -117,24 +57,24 @@ class App {
 
   _showForm(event) {
     this.#mapEvent = event;
-    form.classList.remove('hidden');
-    inputDistance.focus();
+    dom.form.classList.remove('hidden');
+    dom.inputDistance.focus();
   }
 
   _hideForm() {
     // prettier-ignore
-    inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = '';
+    dom.inputDistance.value = dom.inputDuration.value = dom.inputCadence.value = dom.inputElevation.value = '';
 
-    form.style.display = 'none';
-    form.classList.add('hidden');
+    dom.form.style.display = 'none';
+    dom.form.classList.add('hidden');
     setTimeout(() => {
-      form.style.display = 'grid';
+      dom.form.style.display = 'grid';
     }, 1000);
   }
 
   _toggleElevationFlied() {
-    inputElevation.closest('.form').classList.toggle('form__row--hidden');
-    inputCadence.closest('.form').classList.toggle('form__row--hidden');
+    dom.inputElevation.closest('.form').classList.toggle('form__row--hidden');
+    dom.inputCadence.closest('.form').classList.toggle('form__row--hidden');
   }
 
   _newWorkout(e) {
@@ -143,14 +83,14 @@ class App {
     const allPositive = (...inputs) => inputs.every(inp => inp > 0);
 
     e.preventDefault();
-    const type = inputType.value;
-    const distance = +inputDistance.value;
-    const duration = +inputDuration.value;
+    const type = dom.inputType.value;
+    const distance = +dom.inputDistance.value;
+    const duration = +dom.inputDuration.value;
     const { lat, lng } = this.#mapEvent.latlng;
     let workout;
 
     if (type === 'running') {
-      const cadence = +inputCadence.value;
+      const cadence = +dom.inputCadence.value;
 
       if (
         !validInputs(distance, duration, cadence) ||
@@ -162,7 +102,7 @@ class App {
     }
 
     if (type === 'cycling') {
-      const elevation = +inputElevation.value;
+      const elevation = +dom.inputElevation.value;
 
       if (
         !validInputs(distance, duration, elevation) ||
@@ -245,7 +185,7 @@ class App {
       `;
     }
 
-    form.insertAdjacentHTML('afterend', html);
+    dom.form.insertAdjacentHTML('afterend', html);
   }
 
   _moveToPopup(e) {
@@ -263,21 +203,18 @@ class App {
         duration: 1,
       },
     });
-
-    // workout.click();
   }
 
   _setLocalStorage() {
-    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+    LocalStorageService.save(this.#workouts);
   }
 
   _getLocalStorage() {
-    const data = JSON.parse(localStorage.getItem('workouts'));
+    const data = LocalStorageService.load();
 
     if (!data) return;
 
     this.#workouts = data;
-
     this.#workouts.forEach(work => {
       this._renderWorkout(work);
     });
@@ -288,5 +225,3 @@ class App {
     location.reload();
   }
 }
-
-new App();
